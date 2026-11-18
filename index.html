@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>꾸꾸의 편지 배달 대작전</title>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fff6e5; --ink:#4a3b2a; --paper:#fffdf6; --line:#f0e2c4;
+  --k1:#ff8fab; --k2:#ffb347; --k3:#7ec8e3; --k4:#9ad27a; --k5:#c3a6ff; --k6:#f7d154;
+}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none}
+html,body{margin:0;height:100%}
+body{font-family:'Jua',sans-serif;color:var(--ink);background:var(--bg);
+  background-image:radial-gradient(#f7e3bd 1.5px,transparent 1.5px);background-size:22px 22px;overflow-x:hidden}
+button{font-family:'Jua',sans-serif;cursor:pointer;border:none}
+.screen{display:none;min-height:100vh;padding:18px}
+.screen.on{display:block}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+
+/* start */
+#start h1{font-size:clamp(34px,6vw,64px);margin:6px 0;color:#e8603c;text-shadow:3px 3px 0 #ffd9a0}
+.pigeon{font-size:clamp(70px,12vw,120px);display:inline-block;animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-12px) rotate(-4deg)}}
+.story{background:#fff;border:3px dashed #f3b76b;border-radius:20px;padding:16px 22px;font-size:clamp(18px,2.4vw,24px);line-height:1.6;max-width:720px;margin:12px auto}
+.big-btn{font-size:clamp(22px,3vw,30px);padding:14px 34px;border-radius:999px;margin:8px;box-shadow:0 6px 0 rgba(0,0,0,.15);transition:transform .1s}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.b-orange{background:#ff9f43;color:#fff}.b-blue{background:#54a0ff;color:#fff}.b-green{background:#2ecc71;color:#fff}.b-gray{background:#e9e1d3;color:var(--ink)}
+
+/* learn */
+.learn-wrap{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1.1fr 1fr;gap:20px;align-items:start}
+@media(max-width:760px){.learn-wrap{grid-template-columns:1fr}}
+.mini-paper{background:var(--paper);border-radius:14px;padding:18px;box-shadow:0 8px 24px rgba(120,80,20,.15);display:flex;flex-direction:column;gap:8px}
+.mini-paper div{border-radius:10px;padding:8px 12px;font-size:20px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.2);cursor:pointer;transition:transform .15s}
+.mini-paper div:hover,.mini-paper div.sel{transform:scale(1.04)}
+.learn-tip{background:#fff;border-radius:18px;padding:20px;font-size:22px;line-height:1.6;min-height:220px;border:4px solid #ffd59a}
+.learn-tip .tag{display:inline-block;padding:4px 14px;border-radius:999px;color:#fff;font-size:24px;margin-bottom:8px}
+.learn-tip .ex{font-family:'Gaegu',cursive;font-weight:700;font-size:26px;background:#fff8e6;padding:6px 12px;border-radius:10px;margin-top:8px}
+
+/* game */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;max-width:1300px;margin:0 auto 10px}
+.stage-dots{display:flex;gap:8px}
+.stage-dots span{width:42px;height:42px;border-radius:50%;background:#eadfcb;display:flex;align-items:center;justify-content:center;font-size:22px}
+.stage-dots span.done{background:#ffe08a}.stage-dots span.now{background:#ff9f43;color:#fff;transform:scale(1.15)}
+.title-pill{background:#fff;border-radius:999px;padding:8px 22px;font-size:clamp(20px,2.6vw,28px);box-shadow:0 4px 0 #f0d9b0}
+.tools{display:flex;gap:8px}
+.tools button{font-size:18px;padding:8px 16px;border-radius:999px;background:#fff;box-shadow:0 4px 0 #e6d3b0}
+.tools button:disabled{opacity:.45}
+
+.game{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1.35fr 1fr;gap:18px;align-items:start}
+@media(max-width:900px){.game{grid-template-columns:1fr}}
+
+.paper{position:relative;background:var(--paper);border-radius:12px;padding:26px 30px 30px;
+  box-shadow:0 10px 30px rgba(120,80,20,.18);
+  background-image:repeating-linear-gradient(transparent 0 46px,var(--line) 46px 48px);
+  display:flex;flex-direction:column;gap:10px;border:2px solid #f2e3c2}
+.paper::before{content:attr(data-deco);position:absolute;right:14px;top:8px;font-size:40px;opacity:.85}
+.slot{position:relative;min-height:54px;border:3px dashed #d9c7a3;border-radius:14px;padding:8px 14px;
+  font-family:'Gaegu',cursive;font-weight:700;font-size:clamp(20px,2.3vw,27px);line-height:1.4;
+  display:flex;align-items:center;transition:background .2s,border-color .2s,transform .2s;background:rgba(255,255,255,.55)}
+.slot .lab{font-family:'Jua';font-size:16px;color:#a08a66;position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
+.slot.s-to{width:60%}
+.slot.s-body{min-height:150px;align-items:flex-start}
+.slot.s-body .lab{top:24px}
+.slot.s-date,.slot.s-from{width:58%;align-self:flex-end;justify-content:flex-end}
+.slot.s-date .lab,.slot.s-from .lab{left:auto;right:12px}
+@media(max-width:600px){.slot.s-to,.slot.s-date,.slot.s-from{width:85%}}
+.slot.hover{background:#fff3c4;border-color:#ffb347;transform:scale(1.02)}
+.slot.filled{border-style:solid;color:var(--ink)}
+.slot.filled .lab{display:none}
+.slot.wrong{animation:shake .45s}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.slot.pop{animation:pop .4s}
+@keyframes pop{50%{transform:scale(1.06)}}
+.slot .badge{font-family:'Jua';font-size:13px;color:#fff;padding:2px 8px;border-radius:999px;position:absolute;top:-12px;left:10px}
+.slot.s-date .badge,.slot.s-from .badge{left:auto;right:10px}
+
+.side{display:flex;flex-direction:column;gap:12px}
+.coach{display:flex;gap:10px;align-items:flex-end}
+.coach .pg{font-size:64px;line-height:1}
+.coach .pg.jump{animation:jump .5s}
+@keyframes jump{40%{transform:translateY(-20px) rotate(10deg)}}
+.bubble{flex:1;background:#fff;border-radius:18px 18px 18px 4px;padding:12px 16px;font-size:clamp(17px,2vw,21px);line-height:1.5;border:3px solid #ffd59a;min-height:70px}
+.tray{background:#ffe9c7;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:120px;border:3px solid #f6cf91}
+.tray h3{margin:0;font-size:20px;color:#b9772b;font-weight:normal}
+.card{background:#fff;border-radius:14px;padding:10px 14px;font-family:'Gaegu',cursive;font-weight:700;
+  font-size:clamp(19px,2.1vw,24px);line-height:1.4;box-shadow:0 5px 0 #e2c597;cursor:grab;touch-action:none;
+  border-left:10px solid #e7d7b8;transition:transform .12s,opacity .15s}
+.card:hover{transform:rotate(-1deg) scale(1.02)}
+.card.picked{outline:4px solid #ff9f43;transform:scale(1.03)}
+.card.ghost{opacity:.25}
+.drag-clone{position:fixed;z-index:999;pointer-events:none;transform:rotate(-3deg) scale(1.05);box-shadow:0 14px 30px rgba(0,0,0,.25)}
+.stars-now{font-size:22px;text-align:center}
+
+/* overlay */
+.overlay{position:fixed;inset:0;background:rgba(60,40,10,.45);display:none;align-items:center;justify-content:center;z-index:500;padding:16px}
+.overlay.on{display:flex}
+.modal{background:#fffaf0;border-radius:26px;padding:26px 30px;text-align:center;max-width:560px;width:100%;border:5px solid #ffcf7d;animation:zoom .35s}
+@keyframes zoom{from{transform:scale(.6);opacity:0}}
+.modal h2{font-size:36px;margin:6px 0;color:#e8603c}
+.envelope{font-size:90px;display:inline-block;animation:fly 1.6s ease-in-out}
+@keyframes fly{0%{transform:scale(.3) rotate(-20deg)}50%{transform:scale(1.2) rotate(10deg)}100%{transform:scale(1)}}
+.stamp{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:110px;height:130px;background:#fff;
+  border:6px dotted #ffb3a1;border-radius:8px;font-size:54px;margin:6px;box-shadow:0 4px 10px rgba(0,0,0,.1)}
+.stamp small{font-size:15px;margin-top:4px}
+.stamp.empty{filter:grayscale(1);opacity:.35}
+.stars{font-size:44px;letter-spacing:4px}
+.modal p{font-size:21px;line-height:1.5}
+
+.confetti{position:fixed;top:-20px;z-index:900;pointer-events:none;font-size:26px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+</style>
+</head>
+<body>
+
+<!-- 시작 -->
+<section id="start" class="screen on center">
+  <div class="pigeon">🕊️</div>
+  <h1>꾸꾸의 편지 배달 대작전</h1>
+  <div class="story">
+    큰일 났어요! 우체부 비둘기 <b>꾸꾸</b>가 편지를 배달하다가<br>
+    바람이 <b>휘잉~</b> 불어서 편지 조각이 다 흩어졌어요. 😱<br>
+    조각을 <b style="color:#e8603c">알맞은 자리</b>에 끌어다 놓아 편지를 다시 완성해 주세요!
+  </div>
+  <div>
+    <button class="big-btn b-blue" onclick="go('learn')">📖 편지 짜임 알아보기</button>
+    <button class="big-btn b-orange" onclick="startGame()">🚀 배달 시작!</button>
+  </div>
+</section>
+
+<!-- 배우기 -->
+<section id="learn" class="screen">
+  <div class="topbar"><div class="title-pill">📖 편지는 이렇게 생겼어요</div>
+    <div class="tools"><button onclick="go('start')">🏠 처음으로</button></div></div>
+  <div class="learn-wrap">
+    <div class="mini-paper" id="miniPaper"></div>
+    <div>
+      <div class="learn-tip" id="learnTip">왼쪽 편지의 색깔 칸을 하나씩 눌러 보세요! 👈</div>
+      <div style="text-align:center;margin-top:14px">
+        <button class="big-btn b-orange" onclick="startGame()">알겠어! 배달 시작 🚀</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 게임 -->
+<section id="game" class="screen">
+  <div class="topbar">
+    <div class="stage-dots" id="dots"></div>
+    <div class="title-pill" id="stageTitle"></div>
+    <div class="tools">
+      <button id="hintBtn" onclick="useHint()">💡 이름표 보기</button>
+      <button onclick="toggleSound()" id="sndBtn">🔊</button>
+      <button onclick="go('start')">🏠</button>
+    </div>
+  </div>
+  <div class="game">
+    <div class="paper" id="paper"></div>
+    <div class="side">
+      <div class="coach"><div class="pg" id="pg">🕊️</div><div class="bubble" id="bubble"></div></div>
+      <div class="stars-now" id="starsNow"></div>
+      <div class="tray" id="tray"><h3>✉️ 흩어진 편지 조각 — 끌어서 놓거나, 누르고 자리를 눌러요</h3></div>
+    </div>
+  </div>
+</section>
+
+<!-- 끝 -->
+<section id="end" class="screen center">
+  <div class="pigeon">🕊️</div>
+  <h1 style="font-size:clamp(32px,5vw,56px);color:#e8603c;margin:4px 0">배달 완료! 편지 박사 탄생!</h1>
+  <div class="story" id="endText"></div>
+  <div id="stampBook"></div>
+  <div><button class="big-btn b-orange" onclick="startGame()">🔁 다시 하기</button>
+  <button class="big-btn b-blue" onclick="go('learn')">📖 편지 짜임 복습</button></div>
+</section>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script>
+const PARTS = [
+  {key:'to',   name:'받는 사람',      color:'var(--k1)', cls:'s-to',
+   tip:'누구에게 쓰는 편지인지 <b>맨 처음</b>에 써요. 이름 뒤에 <b>"~에게", "~께"</b>를 붙여요.', ex:'사랑하는 엄마께'},
+  {key:'hi',   name:'첫인사',        color:'var(--k2)', cls:'s-hi',
+   tip:'받는 사람에게 <b>처음 건네는 인사</b>예요. 안부를 묻거나 내가 누구인지 말해요.', ex:'엄마, 안녕하세요? 저 민준이에요.'},
+  {key:'body', name:'전하고 싶은 말', color:'var(--k3)', cls:'s-body',
+   tip:'편지에서 <b>가장 하고 싶은 이야기</b>예요. 고마운 일, 미안한 일, 부탁하고 싶은 일을 써요. 가장 길어요!', ex:'맛있는 달걀말이를 해 주셔서 고맙습니다.'},
+  {key:'bye',  name:'끝인사',        color:'var(--k4)', cls:'s-bye',
+   tip:'편지를 <b>마치면서 하는 인사</b>예요. "안녕히 계세요", "또 만나", "건강하세요" 같은 말이에요.', ex:'엄마, 사랑해요. 안녕히 계세요.'},
+  {key:'date', name:'날짜',          color:'var(--k5)', cls:'s-date',
+   tip:'편지를 <b>쓴 날</b>이에요. 끝인사 아래, <b>오른쪽</b>에 써요.', ex:'2026년 11월 18일'},
+  {key:'from', name:'보내는 사람',    color:'var(--k6)', cls:'s-from',
+   tip:'편지를 <b>쓴 사람</b>이 누구인지 <b>맨 끝, 오른쪽</b>에 써요. 어른께는 "올림", 친구에게는 "~가"를 써요.', ex:'아들 민준 올림'}
+];
+
+const LETTERS = [
+  {title:'엄마에게 가는 편지', deco:'💐', stamp:'💐', who:'엄마', showLabels:true, text:{
+    to:'사랑하는 엄마께',
+    hi:'엄마, 안녕하세요? 저 민준이에요.',
+    body:'오늘 아침에 맛있는 달걀말이를 해 주셔서 고맙습니다. 학교에서 힘이 펄펄 났어요. 앞으로 제 방은 제가 깨끗이 정리할게요.',
+    bye:'엄마, 사랑해요. 안녕히 계세요.',
+    date:'2026년 11월 18일',
+    from:'엄마 아들 민준 올림'}},
+  {title:'친구에게 가는 편지', deco:'🎈', stamp:'🎈', who:'서윤이', showLabels:true, text:{
+    to:'내 친구 서윤이에게',
+    hi:'서윤아, 안녕? 나 하은이야.',
+    body:'어제 운동장에서 내가 넘어졌을 때 손을 잡아 일으켜 주어서 정말 고마웠어. 내일 쉬는 시간에 같이 공기놀이 하자!',
+    bye:'그럼 내일 학교에서 만나. 안녕!',
+    date:'2026년 11월 19일',
+    from:'네 친구 하은이가'}},
+  {title:'할머니께 가는 편지', deco:'🍠', stamp:'🍠', who:'할머니', showLabels:false, text:{
+    to:'보고 싶은 할머니께',
+    hi:'할머니, 안녕하세요? 그동안 잘 지내셨어요?',
+    body:'저는 요즘 받아쓰기 연습을 열심히 해서 100점을 받았어요. 겨울 방학에 할머니 댁에 가면 같이 군고구마 구워 먹어요.',
+    bye:'할머니, 늘 건강하세요. 안녕히 계세요.',
+    date:'2026년 11월 20일',
+    from:'손자 지호 올림'}},
+  {title:'선생님께 가는 편지', deco:'🍎', stamp:'🍎', who:'선생님', showLabels:false, text:{
+    to:'고마운 김다정 선생님께',
+    hi:'선생님, 안녕하세요? 저는 2학년 1반 윤아예요.',
+    body:'선생님께서 날마다 재미있는 책을 읽어 주셔서 저도 책이 좋아졌어요. 저도 커서 선생님처럼 친절한 사람이 될래요.',
+    bye:'선생님, 감사합니다. 안녕히 계세요.',
+    date:'2026년 11월 25일',
+    from:'제자 윤아 올림'}},
+  {title:'산타 할아버지께 가는 편지', deco:'🎅', stamp:'🎅', who:'산타 할아버지', showLabels:false, text:{
+    to:'멋진 산타 할아버지께',
+    hi:'산타 할아버지, 안녕하세요? 북극은 많이 춥지요?',
+    body:'올해 저는 동생과 사이좋게 지내고 편식도 하지 않았어요. 크리스마스이브에 루돌프랑 같이 꼭 우리 집에 와 주세요.',
+    bye:'그럼 크리스마스에 만나요. 안녕히 계세요.',
+    date:'2026년 12월 1일',
+    from:'착한 어린이 도윤 올림'}}
+];
+
+const CHEERS = ['딩동댕! 정답이야! 🎉','우와, 척척박사네! 👏','맞았어! 꾸꾸가 신났어! 🕊️','최고야! 💯','바로 그 자리야! ✨'];
+let stage=0, mistakes=0, hintUsed=false, filled=0, results=[], picked=null, soundOn=true;
+let labelsOn=true;
+
+const $=id=>document.getElementById(id);
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0)}
+
+/* ---------- 소리 ---------- */
+let actx=null;
+function tone(freqs,dur=.12,type='triangle'){
+  if(!soundOn) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    freqs.forEach((f,i)=>{
+      const o=actx.createOscillator(),g=actx.createGain();
+      o.type=type;o.frequency.value=f;o.connect(g);g.connect(actx.destination);
+      const t=actx.currentTime+i*dur;
+      g.gain.setValueAtTime(.18,t);g.gain.exponentialRampToValueAtTime(.001,t+dur*1.6);
+      o.start(t);o.stop(t+dur*1.7);
+    });
+  }catch(e){}
+}
+const sGood=()=>tone([660,880]), sBad=()=>tone([220,180],.15,'sawtooth'),
+      sWin=()=>tone([523,659,784,1047],.14), sPick=()=>tone([500],.06);
+function toggleSound(){soundOn=!soundOn;$('sndBtn').textContent=soundOn?'🔊':'🔇'}
+
+/* ---------- 배우기 ---------- */
+function buildLearn(){
+  const mp=$('miniPaper');mp.innerHTML='';
+  PARTS.forEach(p=>{
+    const d=document.createElement('div');d.style.background=p.color;d.textContent=p.name;
+    if(p.key==='body'){d.style.minHeight='80px'}
+    if(p.key==='date'||p.key==='from'){d.style.alignSelf='flex-end';d.style.width='60%';d.style.textAlign='right'}
+    if(p.key==='to'){d.style.width='60%'}
+    d.onclick=()=>{
+      mp.querySelectorAll('div').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');sPick();
+      $('learnTip').innerHTML=`<span class="tag" style="background:${p.color}">${p.name}</span><br>${p.tip}<div class="ex">예) ${p.ex}</div>`;
+    };
+    mp.appendChild(d);
+  });
+}
+
+/* ---------- 게임 ---------- */
+function startGame(){stage=0;results=[];go('game');loadStage()}
+
+function loadStage(){
+  const L=LETTERS[stage];
+  mistakes=0;hintUsed=false;filled=0;picked=null;labelsOn=L.showLabels;
+  $('stageTitle').textContent=`${stage+1}번째 편지 · ${L.title}`;
+  $('dots').innerHTML=LETTERS.map((l,i)=>`<span class="${i<stage?'done':i===stage?'now':''}">${i<stage?l.stamp:'✉️'}</span>`).join('');
+  $('hintBtn').disabled=labelsOn;
+  $('hintBtn').textContent=labelsOn?'💡 이름표 있음':'💡 이름표 보기 (⭐-1)';
+
+  const paper=$('paper');paper.innerHTML='';paper.dataset.deco=L.deco;
+  PARTS.forEach(p=>{
+    const s=document.createElement('div');
+    s.className='slot '+p.cls;s.dataset.key=p.key;
+    s.innerHTML=`<span class="lab">${labelsOn?p.name+' 자리':'❓'}</span>`;
+    s.addEventListener('click',()=>{ if(picked) tryDrop(picked,s); });
+    paper.appendChild(s);
+  });
+
+  const tray=$('tray');tray.querySelectorAll('.card').forEach(c=>c.remove());
+  shuffle(PARTS.map(p=>p.key)).forEach(k=>{
+    const c=document.createElement('div');c.className='card';c.dataset.key=k;c.textContent=L.text[k];
+    c.addEventListener('pointerdown',startDrag);
+    tray.appendChild(c);
+  });
+
+  say(stage===0
+    ? `${L.who}께 갈 편지가 흩어졌어! 조각을 알맞은 자리로 옮겨 줘. 칸에 <b>이름표</b>가 붙어 있으니 잘 보고 해 봐!`
+    : labelsOn ? `이번엔 ${L.who}에게 갈 편지야! 힘내자! 💪`
+    : `🔥 도전! 이번 편지는 <b>이름표가 없어</b>! 자리만 보고 맞혀 볼까? 어려우면 💡를 눌러도 돼.`);
+  updateStars();
+}
+
+function shuffle(a){
+  let r;
+  do{ r=a.slice().sort(()=>Math.random()-.5); }while(r.join()===a.join());
+  return r;
+}
+function say(html){$('bubble').innerHTML=html;const pg=$('pg');pg.classList.remove('jump');void pg.offsetWidth;pg.classList.add('jump')}
+function starCount(){return Math.max(1,3-mistakes-(hintUsed?1:0))}
+function updateStars(){const n=starCount();$('starsNow').textContent='지금 받을 수 있는 별: '+'⭐'.repeat(n)+'☆'.repeat(3-n)}
+
+function useHint(){
+  if(labelsOn) return;
+  labelsOn=true;hintUsed=true;
+  document.querySelectorAll('.slot').forEach(s=>{
+    const p=PARTS.find(x=>x.key===s.dataset.key);
+    s.querySelector('.lab').textContent=p.name+' 자리';
+  });
+  $('hintBtn').disabled=true;$('hintBtn').textContent='💡 이름표 있음';
+  say('이름표를 붙여 줬어! 이제 잘 보고 옮겨 봐 😉');updateStars();
+}
+
+/* 드래그 (마우스·터치·전자칠판 공통) */
+let drag=null;
+function startDrag(e){
+  const card=e.currentTarget;
+  e.preventDefault();
+  const r=card.getBoundingClientRect();
+  drag={card,ox:e.clientX-r.left,oy:e.clientY-r.top,sx:e.clientX,sy:e.clientY,moved:false,clone:null,w:r.width};
+  document.addEventListener('pointermove',moveDrag);
+  document.addEventListener('pointerup',endDrag,{once:true});
+}
+function moveDrag(e){
+  if(!drag) return;
+  if(!drag.moved && Math.hypot(e.clientX-drag.sx,e.clientY-drag.sy)<8) return;
+  if(!drag.moved){
+    drag.moved=true;sPick();
+    const c=drag.card.cloneNode(true);c.classList.add('drag-clone');c.classList.remove('picked');
+    c.style.width=drag.w+'px';document.body.appendChild(c);drag.clone=c;drag.card.classList.add('ghost');
+    clearPick();
+  }
+  drag.clone.style.left=(e.clientX-drag.ox)+'px';drag.clone.style.top=(e.clientY-drag.oy)+'px';
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('hover'));
+  const s=slotAt(e.clientX,e.clientY); if(s && !s.classList.contains('filled')) s.classList.add('hover');
+}
+function endDrag(e){
+  document.removeEventListener('pointermove',moveDrag);
+  if(!drag) return;
+  const d=drag;drag=null;
+  document.querySelectorAll('.slot').forEach(s=>s.classList.remove('hover'));
+  if(!d.moved){ // 탭으로 선택
+    if(picked===d.card){clearPick();return}
+    clearPick();picked=d.card;d.card.classList.add('picked');sPick();
+    say('좋아! 이제 이 조각이 들어갈 <b>자리</b>를 눌러 줘 👆');return;
+  }
+  d.clone.remove();d.card.classList.remove('ghost');
+  const s=slotAt(e.clientX,e.clientY);
+  if(s) tryDrop(d.card,s);
+}
+function slotAt(x,y){const el=document.elementFromPoint(x,y);return el?el.closest('.slot'):null}
+function clearPick(){if(picked)picked.classList.remove('picked');picked=null}
+
+function tryDrop(card,slot){
+  if(slot.classList.contains('filled')){say('거기는 벌써 채워졌어! 다른 자리를 찾아보자.');clearPick();return}
+  const p=PARTS.find(x=>x.key===slot.dataset.key);
+  if(card.dataset.key===slot.dataset.key){
+    slot.classList.add('filled','pop');
+    slot.style.background='#fff';slot.style.borderColor=p.color;
+    slot.innerHTML=`<span class="badge" style="background:${p.color}">${p.name}</span>${card.textContent}`;
+    card.remove();clearPick();filled++;sGood();
+    say(`${CHEERS[Math.floor(Math.random()*CHEERS.length)]}<br><b style="color:#e8603c">${p.name}</b> — ${p.tip}`);
+    if(filled===6) setTimeout(finishStage,700);
+  }else{
+    mistakes++;sBad();updateStars();
+    slot.classList.remove('wrong');void slot.offsetWidth;slot.classList.add('wrong');
+    say(`앗, 아쉬워! 😅 ${labelsOn?`여기는 <b>${p.name}</b> 자리야.`:'이 자리에 맞는 조각이 아니야.'}<br>💡 ${p.tip}`);
+    clearPick();
+  }
+}
+
+function finishStage(){
+  const n=starCount();results[stage]=n;sWin();confetti();
+  const L=LETTERS[stage];const last=stage===LETTERS.length-1;
+  $('modal').innerHTML=`
+    <div class="envelope">💌</div>
+    <h2>${L.who}께 배달 완료!</h2>
+    <div class="stars">${'⭐'.repeat(n)}${'☆'.repeat(3-n)}</div>
+    <p>${n===3?'실수 없이 완벽해! 대단해! 🏆':n===2?'아주 잘했어! 👍':'끝까지 해냈어! 멋져! 💪'}<br>
+    <b>${L.stamp} ${L.who} 우표</b>를 받았어요!</p>
+    <button class="big-btn b-green" onclick="nextStage()">${last?'🏁 결과 보기':'다음 편지 배달하기 ➡️'}</button>`;
+  $('overlay').classList.add('on');
+}
+function nextStage(){
+  $('overlay').classList.remove('on');
+  stage++;
+  if(stage<LETTERS.length) loadStage(); else showEnd();
+}
+function showEnd(){
+  const total=results.reduce((a,b)=>a+b,0);
+  $('endText').innerHTML=`꾸꾸가 편지 5통을 모두 배달했어요! 고마워요! 🕊️💕<br>
+    모은 별: <b style="font-size:30px">⭐ ${total} / 15</b><br>
+    ${total>=14?'👑 편지 왕! 편지 짜임을 완벽하게 알고 있어요!':total>=10?'🥇 편지 박사! 정말 잘했어요!':'🌱 편지 새싹! 한 번 더 하면 더 잘할 수 있어요!'}<br>
+    <span style="font-size:19px">받는 사람 → 첫인사 → 전하고 싶은 말 → 끝인사 → 날짜 → 보내는 사람</span>`;
+  $('stampBook').innerHTML=LETTERS.map((l,i)=>`<div class="stamp">${l.stamp}<small>${'⭐'.repeat(results[i]||0)}</small></div>`).join('');
+  go('end');confetti();sWin();
+}
+function confetti(){
+  const em=['🎉','✨','⭐','💌','🎊','💖'];
+  for(let i=0;i<40;i++){
+    const s=document.createElement('div');s.className='confetti';
+    s.textContent=em[i%em.length];s.style.left=Math.random()*100+'vw';
+    s.style.animationDuration=(2+Math.random()*2)+'s';s.style.animationDelay=Math.random()*.6+'s';
+    document.body.appendChild(s);setTimeout(()=>s.remove(),5000);
+  }
+}
+buildLearn();
+</script>
+</body>
+</html>
